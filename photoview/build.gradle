@@ -1,6 +1,30 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+ext {
+    bintrayRepo = 'Android' // Repo name in bintray dashboard
+    bintrayName = 'PhotoView' // package name of the bintray repo
+
+    publishedGroupId = 'dk.eleknet.android'   // this is the ID we want to see in implementation line
+    libraryName = 'PhotoView'     // this is the module name of library
+    artifact = 'PhotoView'        // this is the artifact we want to see in implementation line
+
+    libraryDescription = 'PhotoView fork' // description of library
+
+    siteUrl = 'https://github.com/elek90/PhotoView'    // git repo url
+    gitUrl = 'https://github.com/elek90/PhotoView.git' // git repo vcs url
+
+    libraryVersion = '1.0.0'      // library version
+
+    developerId = 'elek90'                              // This is your bintray username
+    developerName = 'Alexander Murillo'                 // Developer's name
+    developerEmail = 'alexandersalemander@gmail.com'    // Developer's email
+
+    licenseName = 'The Apache Software License, Version 2.0'  // for example, The Apache Software License, Version 2.0
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'   // for example, http://www.apache.org/licenses/LICENSE-2.0.txt
+    allLicenses = ["Apache-2.0"]    // array of licenses, for example, ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion rootProject.ext.sdkVersion
 
@@ -16,64 +40,4 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.1.0"
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                group = 'com.github.chrisbanes'
-                artifactId = 'PhotoView'
-                version = '2.3.0'
-
-                // Adds javadocs and sources as separate jars.
-                artifact androidJavadocsJar
-                artifact(sourceJar)
-
-                pom {
-                    name = 'PhotoView'
-                    description = 'A simple ImageView that support zooming, both by Multi-touch gestures and double-tap.'
-                    url = 'https://github.com/chrisbanes/PhotoView'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'chrisbanes'
-                            name = 'Chris Banes'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git@github.com/chrisbanes/PhotoView.git'
-                        developerConnection = 'scm:git@github.com/chrisbanes/PhotoView.git'
-                        url = 'https://github.com/chrisbanes/PhotoView'
-                    }
-                }
-            }
-        }
-    }
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            owner.classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-    exclude '**/R.html', '**/R.*.html', '**/index.html'
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    archiveClassifier.set('javadoc')
-    from androidJavadocs.destinationDir
-}
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
-}
+apply from: 'publish.gradle'
